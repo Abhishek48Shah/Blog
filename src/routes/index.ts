@@ -1,0 +1,11 @@
+import express from "express";
+import login from "./access/login";
+import signup from "./access/signup";
+import blog from "./blog/index";
+import refresh from "./access/token";
+const router = express.Router();
+router.use("/login", login);
+router.use("/signup", signup);
+router.use("/refresh", refresh);
+router.use("/blog", blog);
+export default router;
