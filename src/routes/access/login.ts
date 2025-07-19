@@ -10,7 +10,7 @@ import validator from "../../helper/validator";
 import { generateToken } from "../../helper/refreshToken";
 import { NotFoundError, AuthFailureError } from "../../core/apiError";
 import { SuccessResponse } from "../../core/apiResponse";
-import logger from "../../logger";
+import logger from "../../core/logger";
 dotenv.config();
 const router = express.Router();
 const prisma = new PrismaClient();
@@ -29,11 +29,7 @@ router.post(
         throw new AuthFailureError(
           "Password dosen't match, Please try again later",
         );
-      const accessToken = jwt.sign(
-        { userId: user.id },
-        process.env.JWT_PRIVATE_KEY,
-        { expiresIn: "15min" },
-      );
+      const accessToken = generateToken(user.id);
       const refreshToken = await generateToken(user.id);
       res.cookie("refreshToken", refreshToken, {
         httpOnly: true,

@@ -3,7 +3,7 @@ import type { Request, Response, NextFunction } from "express";
 import pinoHttp from "pino-http";
 import cookieParser from "cookie-parser";
 import router from "./routes/index";
-import logger from "./logger";
+import logger from "./core/logger";
 import { ApiError, InternalError } from "./core/apiError";
 const app = express();
 app.use(pinoHttp({ logger }));

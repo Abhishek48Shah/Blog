@@ -12,7 +12,7 @@ import { RoleType } from "../../helper/role";
 import { database } from "../../database/redisClient";
 import { SuccessResponse } from "../../core/apiResponse";
 import { BadRequestError } from "../../core/apiError";
-import logger from "../../logger";
+import logger from "../../core/logger";
 dotenv.config();
 const router = express.Router();
 const prisma = new PrismaClient();

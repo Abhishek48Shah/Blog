@@ -13,7 +13,7 @@ import {
   verifyToken,
   generateToken,
   removeToken,
-} from "../../helper/refreshToken";
+} from "../../core/refreshToken";
 dotenv.config();
 const router = express.Router();
 router.post(
