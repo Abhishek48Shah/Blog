@@ -1,17 +1,15 @@
 import express from "express";
-import dotenv from "dotenv";
 import bcrypt from "bcrypt";
-import { PrismaClient } from "@prisma/client";
 import crypto from "node:crypto";
 import jwt from "jsonwebtoken";
-import schema from "./schema";
+import { PrismaClient } from "@prisma/client";
 import type { Request, Response, NextFunction } from "express";
 import validator from "../../helper/validator";
-import { generateToken } from "../../helper/refreshToken";
+import schema from "./schema";
 import { NotFoundError, AuthFailureError } from "../../core/apiError";
 import { SuccessResponse } from "../../core/apiResponse";
 import logger from "../../core/logger";
-dotenv.config();
+import { database } from "../../database/redisClient";
 const router = express.Router();
 const prisma = new PrismaClient();
 router.post(
@@ -29,16 +27,19 @@ router.post(
         throw new AuthFailureError(
           "Password dosen't match, Please try again later",
         );
-      const accessToken = generateToken(user.id);
-      const refreshToken = await generateToken(user.id);
+      const accessTokenHex = await crypto.randomBytes(32).toString("hex");
+      const refreshTokenHex = await crypto.randomBytes(32).toString("hex");
+      const { accessToken, refreshToken } = await createToken(
+        user,
+        accessTokenHex,
+        refreshTokenHex,
+      );
+      await database.saveKey(refreshTokenHex, user.id);
       res.cookie("refreshToken", refreshToken, {
         httpOnly: true,
         maxAge: 604800 * 1000,
       });
-      new SuccessResponse("Login successfull", {
-        token: accessToken,
-        role: user.role,
-      }).send(res);
+      new SuccessResponse("Login successfull", accessToken).send(res);
     } catch (err: any) {
       logger.info(err);
       return next(err);

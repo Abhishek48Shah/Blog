@@ -1,19 +1,15 @@
 import express from "express";
 import bcrypt from "bcrypt";
 import { PrismaClient } from "@prisma/client";
-import jwt from "jsonwebtoken";
 import type { Request, Response, NextFunction } from "express";
-import dotenv from "dotenv";
 import crypto from "node:crypto";
 import schema from "./schema";
 import validator from "../../helper/validator";
-import { generateToken } from "../../helper/refreshToken";
 import { RoleType } from "../../helper/role";
 import { database } from "../../database/redisClient";
 import { SuccessResponse } from "../../core/apiResponse";
 import { BadRequestError } from "../../core/apiError";
 import logger from "../../core/logger";
-dotenv.config();
 const router = express.Router();
 const prisma = new PrismaClient();
 router.post(
@@ -36,22 +32,19 @@ router.post(
           role: RoleType.GUEST,
         },
       });
-      const accessToken = jwt.sign(
-        { id: user.id },
-        process.env.JWT_PRIVATE_KEY,
-        {
-          expiresIn: "15m",
-        },
+      const accessTokenHex = await crypto.randomBytes(32).toString("hex");
+      const refreshTokenHex = await crypto.randomBytes(32).toString("hex");
+      const { accessToken, refreshToken } = await createToken(
+        user,
+        accessTokenHex,
+        refreshTokenHex,
       );
-      const refreshToken = await generateToken(user.id);
+      await database.saveKey(refreshTokenHex, user.id);
       res.cookie("refreshToken", refreshToken, {
         httpOnly: true,
         maxAge: 604800 * 1000,
       });
-      new SuccessResponse("Signup Successfull", {
-        token: accessToken,
-        role: user.role,
-      }).send(res);
+      new SuccessResponse("Signup Successfull", accessToken).send(res);
     } catch (err: any) {
       return next(err);
     }

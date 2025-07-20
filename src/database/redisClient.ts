@@ -11,7 +11,7 @@ redisClient.on("error", (err: any) => {
   await redisClient.connect();
 })();
 export const database = {
-  saveToken: async (token: string, id: number) => {
+  saveKey: async (token: string, id: number) => {
     await redisClient.set(`token:${token}`, id, { EX: 604800 });
   },
   getToken: async (token: string) => {
