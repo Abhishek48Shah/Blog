@@ -10,6 +10,7 @@ import { NotFoundError, AuthFailureError } from "../../core/apiError";
 import { SuccessResponse } from "../../core/apiResponse";
 import logger from "../../core/logger";
 import { database } from "../../database/redisClient";
+import { createToken } from "../../auth/authUtils";
 const router = express.Router();
 const prisma = new PrismaClient();
 router.post(

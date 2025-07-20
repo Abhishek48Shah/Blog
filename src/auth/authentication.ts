@@ -2,6 +2,8 @@ import express from "express";
 import type { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import { UnAuthorizedError } from "../core/apiError";
+import validator from "../helper/validator";
+import schema from "./schema";
 const router = express.Router();
 export default router.use(
   validator(schema.auth),
