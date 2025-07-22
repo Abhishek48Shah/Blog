@@ -1,8 +1,9 @@
 import jwt from "jsonwebtoken";
 import { readFile } from "fs/promises";
 import { join } from "node:path";
-import { tokenInfo } from "../config.ts";
-//import { InternalError } from "../core/apiError";
+import { tokenInfo, PRIVATE_KEY_PATH, PUBLIC_KEY_PATH } from "../config.ts";
+import { InternalError } from "../core/apiError";
+import logger from "./logger";
 export class JwtPlayload {
   iss: string;
   aud: string;
@@ -21,19 +22,17 @@ export class JwtPlayload {
   }
 }
 const getPublicKey = async () => {
-  const filePath = join("/home/abhishek/Codes/Blog", "keys/public.pem");
-  return await readFile(filePath, "utf8");
+  return await readFile(PUBLIC_KEY_PATH, "utf8");
 };
 const getPrivateKey = async () => {
-  const filePath = join("/home/abhishek/Codes/Blog", "keys/private.pem");
-  return await readFile(filePath, "utf8");
+  return await readFile(PRIVATE_KEY_PATH, "utf8");
 };
 export const encode = async (playload: JwtPlayload) => {
   const key = await getPrivateKey();
   if (!key) {
-    //  throw new InternalError("Token generation failure");
-    console.log("No key find bitch!");
+    throw new InternalError("Token generation failure");
   }
+
   return await jwt.sign({ ...playload }, key, {
     algorithm: "RS256",
   });

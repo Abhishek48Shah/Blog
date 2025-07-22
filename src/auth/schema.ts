@@ -1,10 +1,16 @@
 import joi from "joi";
-import { JoiCookie, AuthBearer } from "../helper/validator";
+import { JoiCookie, JoiAuthBearer } from "../helper/validator";
 export default {
-  auth: joi.Object().keys({
-    authorization: AuthBearer().required(),
-  }),
-  cookie: joi.Object().keys({
-    refreshToken: cookieJoiCookie().required(),
-  }),
+  auth: joi
+    .object()
+    .keys({
+      authorization: JoiAuthBearer().required(),
+    })
+    .unknown(true),
+  cookie: joi
+    .object()
+    .keys({
+      cookie: JoiCookie().required(),
+    })
+    .unknown(true), // this will ignore other values except cookie for check
 };

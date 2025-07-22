@@ -9,6 +9,7 @@ import { RoleType } from "../../helper/role";
 import { database } from "../../database/redisClient";
 import { SuccessResponse } from "../../core/apiResponse";
 import { BadRequestError } from "../../core/apiError";
+import { createToken } from "../../auth/authUtils";
 import logger from "../../core/logger";
 const router = express.Router();
 const prisma = new PrismaClient();
@@ -39,6 +40,7 @@ router.post(
         accessTokenHex,
         refreshTokenHex,
       );
+
       await database.saveKey(refreshTokenHex, user.id);
       res.cookie("refreshToken", refreshToken, {
         httpOnly: true,
@@ -46,6 +48,7 @@ router.post(
       });
       new SuccessResponse("Signup Successfull", accessToken).send(res);
     } catch (err: any) {
+      logger.error(err);
       return next(err);
     }
   },

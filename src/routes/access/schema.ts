@@ -10,6 +10,5 @@ const schema = {
     email: joi.string().email().required(),
     password: joi.string().min(8).required(),
   }),
-  cookie: JoiCookie.required(),
 };
 export default schema;

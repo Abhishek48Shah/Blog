@@ -4,15 +4,22 @@ import { BadRequestError, UnAuthorizedError } from "../core/apiError";
 import logger from "../logger";
 export enum RequestType {
   BODY = "body",
-  COOKIE = "cookies",
-  HEADER = "headers",
+  HEADERS = "headers",
 }
-export const JoiCookie = () => {
-  Joi.string().custom((value, helpers) => {
-    if (typeof value !== string) return helpers.error("string.base");
-    if (value.length !== 64) return helper.error("any.invalid");
+export const JoiAuthBearer = () => {
+  return Joi.string().custom((value, helpers) => {
+    if (!value.startsWith("Bearer")) return helpers.error("any.invalid");
+    if (!value.split(" ")[1]) return helpers.error("any.invalid");
     return value;
-  });
+  }, "Jwt token validation");
+};
+export const JoiCookie = () => {
+  return Joi.string().custom((value, helpers) => {
+    if (!value.startsWith("refreshToken")) return helpers.error("any.invalid");
+    if (!value.split("=")[1]) return helpers.error("any.invalid");
+    console.log(value);
+    return value;
+  }, "Cookie Validation ");
 };
 export default (
     schema: Joi.ObjectSchema,

@@ -7,17 +7,17 @@ import validator, {
   cookieValidator,
   RequestType,
 } from "../../helper/validator";
-import schema from "./schema";
+import schema from "../../auth/schema";
 import { PrismaClient } from "@prisma/client";
-import { createToken } from "../../auth/authUtils";
+import { createToken, getRefreshToken } from "../../auth/authUtils";
 const router = express.Router();
 const prisma = new PrismaClient();
 router.post(
   "/token",
-  validator(schema.cookie, RequestType.COOKIE),
+  validator(schema.cookie, RequestType.HEADERS),
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const token = req.cookies?.refreshToken;
+      const token = getRefreshToken(req.headers.cookie);
       const userId = await verifyToken(token);
       const user = await prisma.User.findUnique({ where: { id: userId } });
       const accessTokenHex = await crypto.randomBytes(32).toString("hex");

@@ -5,10 +5,16 @@ services:
    - "3000:3000"
   volumes:
    - .:/app
+   - /home/abhishek/Codes/Blog/keys/private.pem:/app/keys/private.pem:ro
+   - /home/abhishek/Codes/Blog/keys/public.pem:/app/keys/public.pem:ro
   working_dir: /app
   command: sh -c "npx prisma db push && npm run dev"
+  environment:
+   PRIVATE_KEY_PATH: /app/keys/private.pem
+   PUBLIC_KEY_PATH: /app/keys/public.pem
   depends_on:
   - postgres
+  - redis
   
  postgres:
   image: postgres:17.5
