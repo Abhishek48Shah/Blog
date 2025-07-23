@@ -85,3 +85,19 @@ export class AuthFailureError extends ApiError {
     super(message, types);
   }
 }
+export class TokenExpiredError extends ApiError {
+  constructor(
+    message: string = "Auth failure error",
+    types: ErrorType.AUTH_FAILURE,
+  ) {
+    super(message, types);
+  }
+}
+export class BadTokenError extends ApiError {
+  constructor(
+    message: string = "Auth failure error",
+    types: ErrorType.AUTH_FAILURE,
+  ) {
+    super(message, types);
+  }
+}

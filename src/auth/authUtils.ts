@@ -40,3 +40,4 @@ export const createToken = async (user, accessTokenHex, refreshTokenHex) => {
   console.log(refreshToken);
   return { accessToken: accessToken, refreshToken: refreshToken };
 };
+export const verifyToken = (token) => {};
