@@ -16,7 +16,8 @@ export const database = {
     await redisClient.set(`token:${token}`, id, { EX: 604800 });
   },
   getToken: async (token: string) => {
-    return await redisClient.get(`token:${token}`);
+    const value = await redisClient.get(`token:${token}`);
+    return parseInt(value, 10);
   },
   removeToken: async (token: string) => {
     return await redisClient.del(`token:${token}`);

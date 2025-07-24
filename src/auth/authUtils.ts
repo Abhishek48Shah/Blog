@@ -20,7 +20,7 @@ export const getRefreshToken = (cookie: JwtPalyload) => {
 export const createToken = async (user, accessTokenHex, refreshTokenHex) => {
   const accessToken = await encode(
     new JwtPlayload(
-      tokenInfo.issure,
+      tokenInfo.issuer,
       tokenInfo.audience,
       user,
       accessTokenHex,
@@ -29,15 +29,27 @@ export const createToken = async (user, accessTokenHex, refreshTokenHex) => {
   );
   const refreshToken = await encode(
     new JwtPlayload(
-      tokenInfo.issure,
+      tokenInfo.issuer,
       tokenInfo.audience,
       user,
       refreshTokenHex,
       tokenInfo.refreshValidity,
     ),
   );
-  console.log(accessToken);
-  console.log(refreshToken);
   return { accessToken: accessToken, refreshToken: refreshToken };
 };
-export const verifyToken = (token) => {};
+export const tokenVerification = (playload) => {
+  if (
+    !playload.iss ||
+    !playload.aud ||
+    !playload.exp ||
+    !playload.iat ||
+    !playload.sub ||
+    !playload.prm ||
+    playload.iss !== tokenInfo.issuer ||
+    playload.aud !== tokenInfo.audience
+  ) {
+    throw new AuthFailureError();
+  }
+  return true;
+};

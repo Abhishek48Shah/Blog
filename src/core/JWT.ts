@@ -1,6 +1,7 @@
 import jwt from "jsonwebtoken";
 import { readFile } from "fs/promises";
 import { join } from "node:path";
+import { promisify } from "node:util";
 import { tokenInfo, PRIVATE_KEY_PATH, PUBLIC_KEY_PATH } from "../config.ts";
 import {
   InternalError,
@@ -36,14 +37,14 @@ export const encode = async (playload: JwtPlayload) => {
   if (!key) {
     throw new InternalError("Token generation failure");
   }
-  return await jwt.sign({ ...playload }, key, {
+  return await promisify(jwt.sign)({ ...playload }, key, {
     algorithm: "RS256",
   });
 };
 export const validate = async (token) => {
   try {
     const key = await getPublicKey();
-    return jwt.verify(token, key);
+    return await promisify(jwt.verify)(token, key);
   } catch (err) {
     if (err && err.name === "TokenExpiredError") throw new TokenExpiredError();
     throw new BadTokenError();
