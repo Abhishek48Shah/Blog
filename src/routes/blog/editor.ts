@@ -1,6 +1,5 @@
 import express from "express";
 import type { Request, Response, NextFunction } from "express";
-import jwt from "jsonwebtoken";
 import authentication from "../../auth/authentication";
 const router = express.Router();
 router.use(authentication);

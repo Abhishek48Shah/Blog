@@ -2,7 +2,6 @@ import express from "express";
 import bcrypt from "bcrypt";
 import crypto from "node:crypto";
 import jwt from "jsonwebtoken";
-import { PrismaClient } from "@prisma/client";
 import type { Request, Response, NextFunction } from "express";
 import validator from "../../helper/validator";
 import schema from "./schema";
@@ -11,27 +10,24 @@ import { SuccessResponse } from "../../core/apiResponse";
 import logger from "../../core/logger";
 import { database } from "../../database/redisClient";
 import { createToken } from "../../auth/authUtils";
+import User from "../../database/model/User";
 const router = express.Router();
-const prisma = new PrismaClient();
 router.post(
   "/basic",
   validator(schema.credintial),
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const user = await prisma.User.findUnique({
-        where: { email: req.body.email },
-      });
+      const user = await User.getByEmail(req.body.email);
       if (!user) throw new NotFoundError("Email doesn't exit");
-      logger.info(user.passsword, req.body.password);
-      const match = await bcrypt.compare(req.body.password, user.password);
-      if (!match)
+      const isMatch = await bcrypt.compare(req.body.password, user.password);
+      if (!isMatch)
         throw new AuthFailureError(
           "Password dosen't match, Please try again later",
         );
       const accessTokenHex = await crypto.randomBytes(32).toString("hex");
       const refreshTokenHex = await crypto.randomBytes(32).toString("hex");
       const { accessToken, refreshToken } = await createToken(
-        user,
+        { id: user.id, username: user.username, role: user.role },
         accessTokenHex,
         refreshTokenHex,
       );
