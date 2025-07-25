@@ -2,3 +2,4 @@
 node_modules/
 crul.sh
 cookie.txt
+.config.ts
