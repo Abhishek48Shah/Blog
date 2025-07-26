@@ -4,7 +4,7 @@ import type { Request, Response, NextFunction } from "express";
 import crypto from "node:crypto";
 import schema from "./schema";
 import validator from "../../helper/validator";
-import { database } from "../../database/redisClient";
+import redis from "../../database/redisClient";
 import { SuccessResponse } from "../../core/apiResponse";
 import { BadRequestError } from "../../core/apiError";
 import { createToken } from "../../auth/authUtils";

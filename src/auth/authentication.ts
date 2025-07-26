@@ -6,7 +6,7 @@ import validator, { RequestType } from "../helper/validator";
 import schema from "./schema";
 import { getAccessToken, tokenVerification } from "./authUtils";
 import { validate } from "../core/JWT";
-import { database } from "../database/redisClient";
+import redis from "../database/redisClient";
 import { UnAuthorizedError } from "../core/apiError";
 const router = express.Router();
 export default router.use(
@@ -16,7 +16,7 @@ export default router.use(
       req.accessToken = getAccessToken(req.headers.authorization);
       const playload = await validate(req.accessToken);
       tokenVerification(playload);
-      const userId = database.getToken(playload.prm);
+      const userId = redis.getKey(playload.prm);
       if (!userId) {
         throw new UnAuthorizedError();
       }

@@ -13,4 +13,21 @@ model User {
   email    String @unique
   password String
   role String
+  Post Post[]
+  Profile Profile?
+}
+model Post{
+id Int @id @default(autoincrement())
+title String @db.VarChar(255)
+createdAt DateTime @default(now()) @db.Timestamp(6)
+content String?
+status String
+authorId Int
+User User @relation(fields:[authorId],references:[id], onDelete:Cascade )
+}
+model Profile{
+id Int @id @default(autoincrement())
+boi String?
+userId Int @unique
+User User @relation(fields:[userId],references:[id], onDelete:Cascade)
 }

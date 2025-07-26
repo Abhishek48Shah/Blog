@@ -11,15 +11,16 @@ redisClient.on("error", (err: any) => {
 (async () => {
   await redisClient.connect();
 })();
-export const database = {
+const redis = {
   saveKey: async (token: string, id: number) => {
     await redisClient.set(`token:${token}`, id, { EX: 604800 });
   },
-  getToken: async (token: string) => {
+  getValue: async (token: string) => {
     const value = await redisClient.get(`token:${token}`);
     return parseInt(value, 10);
   },
-  removeToken: async (token: string) => {
+  removeKey: async (token: string) => {
     return await redisClient.del(`token:${token}`);
   },
 };
+export default redis;

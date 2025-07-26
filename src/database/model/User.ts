@@ -8,7 +8,7 @@ const User = {
       where: { email: value },
     });
   },
-  getInfo: async (id: string) => {
+  getInfo: async (id: number) => {
     return await prisma.User.findUnique({
       where: { id: value },
       select: { id: true, username: true, role: true },

@@ -8,13 +8,13 @@ import schema from "./schema";
 import { NotFoundError, AuthFailureError } from "../../core/apiError";
 import { SuccessResponse } from "../../core/apiResponse";
 import logger from "../../core/logger";
-import { database } from "../../database/redisClient";
+import redis from "../../database/redisClient";
 import { createToken } from "../../auth/authUtils";
 import User from "../../database/model/User";
 const router = express.Router();
 router.post(
   "/basic",
-  validator(schema.credintial),
+  validator(schema.credential),
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const user = await User.getByEmail(req.body.email);
@@ -31,7 +31,7 @@ router.post(
         accessTokenHex,
         refreshTokenHex,
       );
-      await database.saveKey(refreshTokenHex, user.id);
+      await redis.saveKey(refreshTokenHex, user.id);
       res.cookie("refreshToken", refreshToken, {
         httpOnly: true,
         maxAge: 604800 * 1000,

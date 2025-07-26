@@ -8,30 +8,29 @@ import validator, {
   RequestType,
 } from "../../helper/validator";
 import schema from "../../auth/schema";
-import { PrismaClient } from "@prisma/client";
 import {
   createToken,
   getRefreshToken,
   tokenVerification,
 } from "../../auth/authUtils";
-import { database } from "../../database/redisClient";
+import User from "../../database/model/User";
+import redis from "../../database/redisClient";
 import { validate } from "../../core/JWT";
 import { AuthFailureError } from "../../core/apiError";
 const router = express.Router();
-const prisma = new PrismaClient();
 router.post(
   "/token",
   validator(schema.cookie, RequestType.HEADERS),
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const token = await getRefreshToken(req.headers.cookie);
-      const playload = await validate(token);
-      tokenVerification(playload);
-      const userId = await database.getToken(playload.prm);
-      if (!userId) {
+      const payload = await validate(token);
+      tokenVerification(payload);
+      const value = await redis.getValue(payload.prm);
+      if (!value) {
         throw new AuthFailureError();
       }
-      const user = await prisma.User.findUnique({ where: { id: userId } });
+      const user = await User.getInfo(value);
       const accessTokenHex = await crypto.randomBytes(32).toString("hex");
       const refreshTokenHex = await crypto.randomBytes(32).toString("hex");
       const { accessToken, refreshToken } = await createToken(
@@ -39,7 +38,7 @@ router.post(
         accessTokenHex,
         refreshTokenHex,
       );
-      await database.removeToken(playload.prm);
+      await redis.removeKey(playload.prm);
       await database.saveKey(refreshTokenHex, user.id);
       res.cookie("refreshToken", refreshToken, {
         httpOnly: true,

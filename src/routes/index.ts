@@ -1,8 +1,8 @@
 import express from "express";
 import login from "./access/login";
 import signup from "./access/signup";
-import blog from "./blog/index";
 import refresh from "./access/token";
+import blog from "./blog/index";
 const router = express.Router();
 router.use("/login", login);
 router.use("/signup", signup);
