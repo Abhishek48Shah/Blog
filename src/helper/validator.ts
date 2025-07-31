@@ -5,7 +5,21 @@ import logger from "../logger";
 export enum RequestType {
   BODY = "body",
   HEADERS = "headers",
+  PARAMS = "params",
+  QUERY = "query",
 }
+export const JoiQuery = () => {
+  return Joi.string().custom((value, helpers) => {
+    if (!value) return helper.error("any.invalid");
+    return value;
+  }, "Query validation");
+};
+export const JoiParams = () => {
+  return Joi.string().custom((value, helpers) => {
+    if (!value) return helper.error("any.invalid");
+    return value;
+  }, "Params validations");
+};
 export const JoiAuthBearer = () => {
   return Joi.string().custom((value, helpers) => {
     if (!value.startsWith("Bearer")) return helpers.error("any.invalid");
@@ -17,7 +31,6 @@ export const JoiCookie = () => {
   return Joi.string().custom((value, helpers) => {
     if (!value.startsWith("refreshToken")) return helpers.error("any.invalid");
     if (!value.split("=")[1]) return helpers.error("any.invalid");
-    console.log(value);
     return value;
   }, "Cookie Validation ");
 };

@@ -3,4 +3,5 @@ export enum RoleType {
   EDITOR = "editor",
   AUTHOR = "autor",
   GUEST = "guest",
+  WRITER = "writer",
 }

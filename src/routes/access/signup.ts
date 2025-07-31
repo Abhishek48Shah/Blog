@@ -22,14 +22,16 @@ router.post(
       const hashedPassword = await bcrypt.hash(payload.password, 10);
       const newUserDetails = { ...payload, password: hashedPassword };
       const user = await User.createNew(newUserDetails);
-      const accessTokenHex = await crypto.randomBytes(32).toString("hex");
       const refreshTokenHex = await crypto.randomBytes(32).toString("hex");
       const { accessToken, refreshToken } = await createToken(
         user,
-        accessTokenHex,
         refreshTokenHex,
       );
-      await database.saveKey(refreshTokenHex, user.id);
+      await redis.saveKey(refreshTokenHex, {
+        id: user.id,
+        username: user.username,
+        role: user.role,
+      });
       res.cookie("refreshToken", refreshToken, {
         httpOnly: true,
         maxAge: 604800 * 1000,

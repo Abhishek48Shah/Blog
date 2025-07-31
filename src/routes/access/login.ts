@@ -24,14 +24,16 @@ router.post(
         throw new AuthFailureError(
           "Password dosen't match, Please try again later",
         );
-      const accessTokenHex = await crypto.randomBytes(32).toString("hex");
       const refreshTokenHex = await crypto.randomBytes(32).toString("hex");
       const { accessToken, refreshToken } = await createToken(
         { id: user.id, username: user.username, role: user.role },
-        accessTokenHex,
         refreshTokenHex,
       );
-      await redis.saveKey(refreshTokenHex, user.id);
+      await redis.saveKey(refreshTokenHex, {
+        id: user.id,
+        username: user.username,
+        role: user.role,
+      });
       res.cookie("refreshToken", refreshToken, {
         httpOnly: true,
         maxAge: 604800 * 1000,

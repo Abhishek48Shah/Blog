@@ -25,21 +25,18 @@ router.post(
     try {
       const token = await getRefreshToken(req.headers.cookie);
       const payload = await validate(token);
-      tokenVerification(payload);
+      tokenVerification(payload, true);
       const value = await redis.getValue(payload.prm);
       if (!value) {
         throw new AuthFailureError();
       }
-      const user = await User.getInfo(value);
-      const accessTokenHex = await crypto.randomBytes(32).toString("hex");
       const refreshTokenHex = await crypto.randomBytes(32).toString("hex");
       const { accessToken, refreshToken } = await createToken(
-        user,
-        accessTokenHex,
+        value,
         refreshTokenHex,
       );
-      await redis.removeKey(playload.prm);
-      await database.saveKey(refreshTokenHex, user.id);
+      await redis.removeKey(payload.prm);
+      await redis.saveKey(refreshTokenHex, value);
       res.cookie("refreshToken", refreshToken, {
         httpOnly: true,
         maxAge: 604800 * 1000,

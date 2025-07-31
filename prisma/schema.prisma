@@ -13,10 +13,10 @@ model User {
   email    String @unique
   password String
   role String
-  Post Post[]
+  Blog Blog[]
   Profile Profile?
 }
-model Post{
+model Blog{
 id Int @id @default(autoincrement())
 title String @db.VarChar(255)
 createdAt DateTime @default(now()) @db.Timestamp(6)

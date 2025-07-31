@@ -1,5 +1,4 @@
 import { PrismaClient } from "@prisma/client";
-import asyncWrapper from "../../helper/asyncWrapper";
 import { RoleType } from "../../helper/role";
 const prisma = new PrismaClient();
 const User = {
@@ -20,7 +19,7 @@ const User = {
         username: username,
         email: email,
         password: password,
-        role: RoleType.GUEST,
+        role: RoleType.WRITER,
       },
       select: {
         id: true,

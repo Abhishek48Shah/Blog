@@ -12,15 +12,18 @@ redisClient.on("error", (err: any) => {
   await redisClient.connect();
 })();
 const redis = {
-  saveKey: async (token: string, id: number) => {
-    await redisClient.set(`token:${token}`, id, { EX: 604800 });
+  saveKey: async (key: string, value: object) => {
+    await redisClient.set(`token:${key}`, JSON.stringify(value), {
+      EX: 604800,
+    });
   },
-  getValue: async (token: string) => {
-    const value = await redisClient.get(`token:${token}`);
-    return parseInt(value, 10);
+  getKey: async (key: string) => {
+    const value = await redisClient.get(`token:${key}`);
+    console.log(value);
+    return JSON.parse(value);
   },
-  removeKey: async (token: string) => {
-    return await redisClient.del(`token:${token}`);
+  removeKey: async (key: string) => {
+    return await redisClient.del(`token:${key}`);
   },
 };
 export default redis;

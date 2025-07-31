@@ -10,16 +10,16 @@ import redis from "../database/redisClient";
 import { UnAuthorizedError } from "../core/apiError";
 const router = express.Router();
 export default router.use(
-  validator(schema.auth, RequestType.HEADER),
+  validator(schema.auth, RequestType.HEADERS),
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       req.accessToken = getAccessToken(req.headers.authorization);
-      const playload = await validate(req.accessToken);
-      tokenVerification(playload);
-      const userId = redis.getKey(playload.prm);
-      if (!userId) {
+      const payload = await validate(req.accessToken);
+      tokenVerification(payload);
+      if (!payload) {
         throw new UnAuthorizedError();
       }
+      req.user = payload.sub;
       return next();
     } catch (err: any) {
       throw err;

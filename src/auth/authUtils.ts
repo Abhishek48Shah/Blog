@@ -8,7 +8,8 @@ export const getAccessToken = (authorization: JwtPlayload) => {
   if (!authorization) throw new AuthFailureError("Invalid Authorization");
   if (!authorization.startsWith("Bearer"))
     throw new AuthFailureError("Invalid Authorization");
-  return authorization.split(" ")[1];
+  const value = authorization.split(" ")[1];
+  return value;
 };
 export const getRefreshToken = (cookie: JwtPalyload) => {
   if (!cookie.startsWith("refreshToken"))
@@ -17,13 +18,12 @@ export const getRefreshToken = (cookie: JwtPalyload) => {
     throw new AuthFailureError("Invalid Authorization");
   return cookie.split("=")[1];
 };
-export const createToken = async (user, accessTokenHex, refreshTokenHex) => {
+export const createToken = async (user, refreshTokenHex) => {
   const accessToken = await encode(
     new JwtPlayload(
       tokenInfo.issuer,
       tokenInfo.audience,
       user,
-      accessTokenHex,
       tokenInfo.accessValidity,
     ),
   );
@@ -32,23 +32,25 @@ export const createToken = async (user, accessTokenHex, refreshTokenHex) => {
       tokenInfo.issuer,
       tokenInfo.audience,
       user,
-      refreshTokenHex,
       tokenInfo.refreshValidity,
+      refreshTokenHex,
     ),
   );
   return { accessToken: accessToken, refreshToken: refreshToken };
 };
-export const tokenVerification = (playload) => {
+export const tokenVerification = (payload, isRefresh = false) => {
   if (
-    !playload.iss ||
-    !playload.aud ||
-    !playload.exp ||
-    !playload.iat ||
-    !playload.sub ||
-    !playload.prm ||
-    playload.iss !== tokenInfo.issuer ||
-    playload.aud !== tokenInfo.audience
+    !payload.iss ||
+    !payload.aud ||
+    !payload.exp ||
+    !payload.iat ||
+    !payload.sub ||
+    payload.iss !== tokenInfo.issuer ||
+    payload.aud !== tokenInfo.audience
   ) {
+    throw new AuthFailureError();
+  }
+  if (isRefresh && !payload.prm) {
     throw new AuthFailureError();
   }
   return true;

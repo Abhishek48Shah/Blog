@@ -14,16 +14,22 @@ export class JwtPlayload {
   aud: string;
   exp: number;
   iat: number;
-  sub: number;
-  prm: string;
+  sub: object;
+  prm?: string;
 
-  constructor(iss, aud, sub, prm, validity) {
+  constructor(
+    iss: string,
+    aud: string,
+    sub: object,
+    validity: number,
+    prm?: string,
+  ) {
     this.iss = iss;
     this.aud = aud;
     this.sub = sub;
-    this.prm = prm;
     this.iat = Math.floor(Date.now() / 1000);
     this.exp = this.iat + validity;
+    this.prm = prm;
   }
 }
 const getPublicKey = async () => {
@@ -41,13 +47,14 @@ export const encode = async (playload: JwtPlayload) => {
     algorithm: "RS256",
   });
 };
-export const validate = async (token) => {
+export const validate = async (token: string) => {
   try {
     const key = await getPublicKey();
     return await promisify(jwt.verify)(token, key);
   } catch (err) {
     if (err && err.name === "TokenExpiredError") throw new TokenExpiredError();
     throw new BadTokenError();
+    console.log(err.stack);
     return next(err);
   }
 };
