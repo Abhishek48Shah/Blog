@@ -64,7 +64,8 @@ router.get(
 router.get(
   "/alldraft",
   asyncWrapper(async (req: Request, res: Response, next: NextFunction) => {
-    await Blog.get();
+    const data = await Blog.getDraft(req.user.id);
+    new SuccessResponse("Successfully get the draft vlog", data).send(red);
   }),
 );
 export default router;

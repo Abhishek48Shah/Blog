@@ -20,9 +20,23 @@ const Blog = {
   get: async (blogId: number) => {
     return await prisma.Blog.findUnique({ where: { id: blogId } });
   },
-  getAll: async (query: string) => {
+  getAll: async (userId: number) => {
+    return await prisma.Blog.findUnique({
+      where: { authorId: userId },
+      include: {
+        Blog: { status: "published" },
+      },
+    });
+  },
+  getSearch: async (query: string) => {
     return await prisma.Blog.findMany({
-      where: { title: query, status: "published" },
+      where: { title: query, status: "published", mode: "insensitive" },
+    });
+  },
+  getDraft: async (userId: number) => {
+    return await prisma.Blog.findUnique({
+      where: { authorId: userId },
+      include: { Blog: { status: "draft" } },
     });
   },
 };
