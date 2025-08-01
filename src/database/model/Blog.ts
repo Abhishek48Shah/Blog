@@ -21,10 +21,12 @@ const Blog = {
     return await prisma.Blog.findUnique({ where: { id: blogId } });
   },
   getAll: async (userId: number) => {
-    return await prisma.Blog.findUnique({
-      where: { authorId: userId },
-      include: {
-        Blog: { status: "published" },
+    return await prisma.Blog.findMany({
+      where: { authorId: userId, status: "published" },
+      select: {
+        title: true,
+        content: true,
+        createdAt: true,
       },
     });
   },
@@ -34,9 +36,8 @@ const Blog = {
     });
   },
   getDraft: async (userId: number) => {
-    return await prisma.Blog.findUnique({
-      where: { authorId: userId },
-      include: { Blog: { status: "draft" } },
+    return await prisma.Blog.findMany({
+      where: { authorId: userId, status: "draft" },
     });
   },
 };

@@ -44,11 +44,9 @@ router.patch(
   }),
 );
 router.get(
-  "/all/:id",
-  validator(schema.params, RequestType.PARAMS),
+  "/all",
   asyncWrapper(async (req: Request, res: Response, next: NextFunction) => {
-    const { id } = req.params;
-    const blog = await Blog.get(parseInt(id, 10));
+    const blog = await Blog.get(req.user.id);
     new SuccessResponse("Successfully get all the blog", blog).send(res);
   }),
 );
@@ -65,7 +63,7 @@ router.get(
   "/alldraft",
   asyncWrapper(async (req: Request, res: Response, next: NextFunction) => {
     const data = await Blog.getDraft(req.user.id);
-    new SuccessResponse("Successfully get the draft vlog", data).send(red);
+    new SuccessResponse("Successfully get the draft vlog", data).send(res);
   }),
 );
 export default router;
