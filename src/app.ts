@@ -2,13 +2,15 @@ import express from "express";
 import type { Request, Response, NextFunction } from "express";
 import pinoHttp from "pino-http";
 import cookieParser from "cookie-parser";
+import cors from "cors";
 import router from "./routes/index";
 import logger from "./core/logger";
 import { ApiError, InternalError } from "./core/apiError";
 const app = express();
 app.use(pinoHttp({ logger }));
-app.use(express.json());
+app.use(express.json({ limit: "10mb" }));
 app.use(cookieParser());
+app.use(cors());
 app.use("/", router);
 const errorMiddleware = (
   err: any,
