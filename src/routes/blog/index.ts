@@ -12,8 +12,4 @@ const readerLimiter = createrRateLimiter(roleLimiters.reader);
 const router = express.Router();
 router.use("/admin/", adimnLimiter, admin);
 router.use("/writer", writerLimiter, writer);
-router.get(
-  "/",
-  asyncWrapper(async (req: Request, res: Response, next: NextFunction) => {}),
-);
 export default router;
