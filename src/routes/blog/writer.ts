@@ -12,54 +12,58 @@ const router = express.Router();
 router.use(authentication);
 router.use(authorization(RoleType.WRITER));
 router.post(
-    "/new",
-    validator(schema.body),
-    asyncWrapper(async (req: Request, res: Response, next: NextFunction) => {
-        await Blog.createNew(req.body);
-        new SuccessMsgResponse("Blog created successfully").send(res);
-    })
+  "/new",
+  validator(schema.body),
+  asyncWrapper(async (req: Request, res: Response, next: NextFunction) => {
+    await Blog.createNew(req.body);
+    new SuccessMsgResponse("Blog created successfully").send(res);
+  }),
 );
 router.delete(
-    "/delete/:id",
-    validator(schema.params, RequestType.PARAMS),
-    asyncWrapper(async (req: Request, res: Response, next: NextFunction) => {
-        const { id } = req.params;
-        await Blog.delete(parseInt(id, 10));
-        new SuccessMsgResponse("Blog deleted successfully").send(res);
-    })
+  "/delete/:id",
+  validator(schema.params, RequestType.PARAMS),
+  asyncWrapper(async (req: Request, res: Response, next: NextFunction) => {
+    const { id } = req.params;
+    await Blog.delete(parseInt(id, 10));
+    new SuccessMsgResponse("Blog deleted successfully").send(res);
+  }),
 );
 router.patch(
-    "/edit/:id",
-    validator(schema.params, RequestType.PARAMS),
-    validator(schema.body),
-    asyncWrapper(async (req: Request, res: Response, next: NextFunction) => {
-        const { id } = req.params;
-        const { title, body, status } = req.body;
-        const value = {};
-        if (title) value.title = title;
-        if (body) value.body = body;
-        if (status) value.status = status;
-        await Blog.edit(parseInt(id, 10), value);
-        new SuccessMsgResponse("Blog edit successfully").send(res);
-    })
+  "/edit/:id",
+  validator(schema.params, RequestType.PARAMS),
+  validator(schema.body),
+  asyncWrapper(async (req: Request, res: Response, next: NextFunction) => {
+    const { id } = req.params;
+    const { title, body, status } = req.body;
+    const value = {};
+    if (title) value.title = title;
+    if (body) value.body = body;
+    if (status) value.status = status;
+    await Blog.edit(parseInt(id, 10), value);
+    new SuccessMsgResponse("Blog edit successfully").send(res);
+  }),
 );
 router.get(
-    "/all",
-    asyncWrapper(async (req: Request, res: Response, next: NextFunction) => {
-        const blog = await Blog.getAll_By_UserId(req.user.id);
-        new SuccessResponse("Successfully get all the blog", blog).send(res);
-    })
+  "/all",
+  asyncWrapper(async (req: Request, res: Response, next: NextFunction) => {
+    const blog = await Blog.getAll_By_UserId(req.user.id);
+    new SuccessResponse("Successfully get all the blog", blog).send(res);
+  }),
 );
 
 router.get(
-    "/draft",
-    asyncWrapper(async (req: Request, res: Response, next: NextFunction) => {
-        const data = await Blog.get_all_Draft(req.user.id);
-        new SuccessResponse("Successfully get the draft vlog", data).send(res);
-    })
+  "/draft",
+  asyncWrapper(async (req: Request, res: Response, next: NextFunction) => {
+    const data = await Blog.get_all_Draft(req.user.id);
+    new SuccessResponse("Successfully get all the drafts blog", data).send(res);
+  }),
 );
 router.get(
-    "/feeds",
-    asyncWrapper(async (req: Request, res: Response, next: NextFunction) => {})
+  "/feeds",
+  asyncWrapper(async (req: Request, res: Response, next: NextFunction) => {
+    const blog = await Blog.getFeeds(req.user.id);
+    res.send(blog);
+    console.log(blog);
+  }),
 );
 export default router;

@@ -15,7 +15,7 @@ model User {
   role String
   Blog Blog[]
   Profile Profile?
-  followers Follow[] @ralation("Followers")
+  followers Follow[] @relation("Followers")
   following Follow[] @relation("Following")
 }
 model Blog{
@@ -37,7 +37,7 @@ model Follow{
     id Int @id @default(autoincrement())
    followerId Int
    followingId Int
-   follower User @relation("Followers",field:[followerId],references:[id],onDelete:Cascade)
-   following User @relation("Following",field:[followingId],references:[id],onDelete:Cascade)
+   follower User @relation("Followers",fields:[followerId],references:[id],onDelete:Cascade)
+   following User @relation("Following",fields:[followingId],references:[id],onDelete:Cascade)
    @@unique([followerId,followingId])
 }

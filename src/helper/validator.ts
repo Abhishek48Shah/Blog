@@ -40,7 +40,7 @@ export default (
   ) =>
   (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { error } = schema.validate(req[source]);
+      const { error } = schema.validate(req[source] || {});
       if (!error) return next();
       const { details } = error;
       const message = details
