@@ -61,9 +61,14 @@ router.get(
 router.get(
   "/feeds",
   asyncWrapper(async (req: Request, res: Response, next: NextFunction) => {
+    let randomBlog;
     const blog = await Blog.getFeeds(req.user.id);
-    res.send(blog);
+    const length = blog.length;
+    //      if (length < 100) {
+    //	  randomBlog = await Blog.getRandom_Blog()
+    //  }
     console.log(blog);
+    new SuccessResponse(blog).send(res);
   }),
 );
 export default router;
